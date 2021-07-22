@@ -1,38 +1,48 @@
 MODULE tcp
-	VAR socketdev socket1;
-	VAR string X1:="";
-	VAR string Y1:="";
-	VAR string Z1:="";
-	VAR bool ok;	
-	PERS num X:=-10;
-	PERS num Y:=-20;
-	PERS num Z:=-30;
-	
+	VAR socketdev server;
+	VAR socketdev client;
+	VAR pos target:= [0,0,0];
+	VAR string data:="";
+	VAR bool ok;
+	PERS num start:=1;
+	PERS num end:=0;
+
 	PROC main()
+		initServer;
 		WHILE TRUE DO
-		socket;
-		MoveJ offs(CRobT(\Tool:=tool0),x,y,z), v200, fine, tool0;
+		getData;
+		phrase;
+		moveToTarget;
 		ENDWHILE
 	ENDPROC
 
-	PROC socket()
-		SocketCreate socket1;
-		SocketConnect socket1, "192.168.125.202", 1400;
-		WaitTime 0.1;
-		SocketSend socket1\Str:="COPY!";
-		SocketReceive socket1\Str:=X1;
-		WaitTime 0.1;
-		SocketReceive socket1\Str:=Y1;
-		SocketSend socket1\Str:="COPY!";
-		WaitTime 0.1;
-		SocketReceive socket1\Str:=Z1;
-		SocketSend socket1\Str:="COPY!";
-		WaitTime 0.1;
-		SocketClose socket1;
-		ok:=strtoval(X1,X);
-		ok:=strtoval(Y1,Y);
-		ok:=strtoval(Z1,Z);
+	PROC initServer()
+		SocketCreate server;
+		SocketBind server, "192.168.125.1", 1025;
+		SocketListen server;
 	ENDPROC
-	
+
+	PROC getData()
+		SocketAccept server, client;
+		SocketReceive client\Str:=data;
+		SocketSend client\Str:="COPY!";
+		SocketClose client;
+	ENDPROC
+
+	PROC phrase()
+		start:=1;
+		end:=StrFind(data,start,",");
+		ok:=strtoval(StrPart(data,start,end-start), target.x);
+		start:=end+1;
+		end:=StrFind(data,start,",");
+		ok:=strtoval(StrPart(data,start,end-start), target.y);
+		start:=end+1;
+		end:=StrFind(data,start,",");
+		ok:=strtoval(StrPart(data,start,end-start), target.z);
+	ENDPROC
+
+	PROC moveToTarget()
+		MoveJ offs(CRobT(\Tool:=tool0), target.x, target.y, target.z), v200, fine, tool0;
+	ENDPROC
 
 ENDMODULE

@@ -1,18 +1,18 @@
 import socket
+from typedef import pos
 
-server=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-server.bind(('0.0.0.0',1400))
-server.listen()
+
+offset = pos(0,0,0)
 
 while True:
-    conn,addr = server.accept()
-    X=input("请输入X:")
-    conn.send(X.encode(('utf-8')))
-    data = conn.recv(1024)
-    Y=input("请输入Y:")
-    conn.send(Y.encode(('utf-8')))
-    data = conn.recv(1024)
-    Z=input("请输入Z:")
-    conn.send(Z.encode(('utf-8')))
-    data = conn.recv(1024)
-    conn.close()
+    client=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+    client.connect(('192.168.125.1',1025))
+    x=input("请输入X:")
+    offset.set_x(int(x))
+    y=input("请输入Y:")
+    offset.set_y(int(y))
+    z=input("请输入Z:")
+    offset.set_z(int(z))
+    client.send(offset.encode())
+    data = client.recv(1024)
+    client.close()
