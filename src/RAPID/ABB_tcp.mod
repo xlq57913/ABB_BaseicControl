@@ -1,48 +1,99 @@
 MODULE tcp
 	VAR socketdev server;
-	VAR socketdev client;
-	VAR pos target:= [0,0,0];
+	VAR socketdev incomming_socket;
+	VAR robTarget target;
 	VAR string data:="";
-	VAR bool ok;
-	PERS num start:=1;
-	PERS num end:=0;
+	PERS num cmdFlag:=-1;
 
 	PROC main()
-		initServer;
+		Initialize;
 		WHILE TRUE DO
+		acceptConnection;
 		getData;
-		phrase;
-		moveToTarget;
+		phraseCmdFlag;
+		TEST cmdFlag
+		CASE 1 : !// PC requires robotStatus
+		CASE 2 : !// PC requires currentRobotTarget
+			sendCurrentTarget;
+		CASE 3 : !// PC sends targetPoint to move to
+			getData;
+			phraseTarget;
+			moveToTarget;
+		DEFAULT :
+		ENDTEST
+		closeConnection;
 		ENDWHILE
 	ENDPROC
 
-	PROC initServer()
+	PROC Initialize()
+		target:=CRobT(\Tool:=tool0);
 		SocketCreate server;
 		SocketBind server, "192.168.125.1", 1025;
 		SocketListen server;
 	ENDPROC
 
-	PROC getData()
-		SocketAccept server, client;
-		SocketReceive client\Str:=data;
-		SocketSend client\Str:="COPY!";
-		SocketClose client;
+	PROC acceptConnection()
+		SocketAccept server, incomming_socket;
 	ENDPROC
 
-	PROC phrase()
+	PROC closeConnection()
+		SocketClose incomming_socket;
+	ENDPROC
+
+	PROC getData()
+		SocketReceive incomming_socket\Str:=data;
+		SocketSend incomming_socket\Str:="COPY!";
+	ENDPROC
+
+	PROC phraseCmdFlag()
+		VAR bool ok;
+		ok:=strtoval(data, cmdFlag);
+	ENDPROC
+
+	PROC phraseTarget()
+		VAR num start:=1;
+		VAR num end:=0;
+		VAR bool ok;
 		start:=1;
 		end:=StrFind(data,start,",");
-		ok:=strtoval(StrPart(data,start,end-start), target.x);
+		ok:=strtoval(StrPart(data,start,end-start), target.trans.x);
 		start:=end+1;
 		end:=StrFind(data,start,",");
-		ok:=strtoval(StrPart(data,start,end-start), target.y);
+		ok:=strtoval(StrPart(data,start,end-start), target.trans.y);
 		start:=end+1;
 		end:=StrFind(data,start,",");
-		ok:=strtoval(StrPart(data,start,end-start), target.z);
+		ok:=strtoval(StrPart(data,start,end-start), target.trans.z);
+		start:=end+1;
+		end:=StrFind(data,start,",");
+		ok:=strtoval(StrPart(data,start,end-start), target.rot.q1);
+		start:=end+1;
+		end:=StrFind(data,start,",");
+		ok:=strtoval(StrPart(data,start,end-start), target.rot.q2);
+		start:=end+1;
+		end:=StrFind(data,start,",");
+		ok:=strtoval(StrPart(data,start,end-start), target.rot.q3);
+		start:=end+1;
+		end:=StrFind(data,start,",");
+		ok:=strtoval(StrPart(data,start,end-start), target.rot.q4);
 	ENDPROC
 
 	PROC moveToTarget()
-		MoveJ offs(CRobT(\Tool:=tool0), target.x, target.y, target.z), v200, fine, tool0;
+		MoveJ target, v200, fine, tool0;
+	ENDPROC
+
+	PROC sendCurrentTarget()
+		VAR robTarget currentTarget;
+		currentTarget:=CRobT(\Tool:=tool0);
+		data:="";
+		data := NumToStr(currentTarget.trans.x,2) + ",";
+        data := data + NumToStr(currentTarget.trans.y,2) + ",";
+        data := data + NumToStr(currentTarget.trans.z,2) + ",";
+        data := data + NumToStr(currentTarget.rot.q1,3) + ",";
+        data := data + NumToStr(currentTarget.rot.q2,3) + ",";
+        data := data + NumToStr(currentTarget.rot.q3,3) + ",";
+        data := data + NumToStr(currentTarget.rot.q4,3);
+		SocketSend incomming_socket\Str:=data;
+		SocketReceive incomming_socket\Str:=data;
 	ENDPROC
 
 ENDMODULE
