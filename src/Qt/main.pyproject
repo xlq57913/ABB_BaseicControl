@@ -1,0 +1,3 @@
+{
+    "files": ["main.py","main.qml","customControls/Logger.qml","customControls/LineEdit.qml","customControls/Info.qml"]
+}
