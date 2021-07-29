@@ -1,8 +1,8 @@
 import socket
-from typedef import robTarget
+from abbTypedef import robTarget, robInfo
 
 
-target = robTarget(0, 0, 0, 0, 0, 0, 0)
+target = robTarget()
 cmdFlag = -1
 
 while True:

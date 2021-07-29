@@ -13,6 +13,7 @@ MODULE tcp
 		phraseCmdFlag;
 		TEST cmdFlag
 		CASE 1 : !// PC requires robotStatus
+			sendRobInfo;
 		CASE 2 : !// PC requires currentRobotTarget
 			sendCurrentTarget;
 		CASE 3 : !// PC sends targetPoint to move to
@@ -81,17 +82,34 @@ MODULE tcp
 		MoveJ target, v200, fine, tool0;
 	ENDPROC
 
+	PROC sendRobInfo()
+		data := GetSysInfo(\SerialNo) + "*";
+        data := addString + GetSysInfo(\SWVersion) + "*";
+        data := addString + GetSysInfo(\RobotType);
+		SocketSend incomming_socket\Str:=data;
+		SocketReceive incomming_socket\Str:=data;
+	ENDPROC
+
 	PROC sendCurrentTarget()
 		VAR robTarget currentTarget;
 		currentTarget:=CRobT(\Tool:=tool0);
-		data:="";
 		data := NumToStr(currentTarget.trans.x,2) + ",";
         data := data + NumToStr(currentTarget.trans.y,2) + ",";
         data := data + NumToStr(currentTarget.trans.z,2) + ",";
         data := data + NumToStr(currentTarget.rot.q1,3) + ",";
         data := data + NumToStr(currentTarget.rot.q2,3) + ",";
         data := data + NumToStr(currentTarget.rot.q3,3) + ",";
-        data := data + NumToStr(currentTarget.rot.q4,3);
+        data := data + NumToStr(currentTarget.rot.q4,3) + ",";
+		data := data + NumToStr(currentTarget.robconf.cf1,2) + ",";
+		data := data + NumToStr(currentTarget.robconf.cf4,2) + ",";
+		data := data + NumToStr(currentTarget.robconf.cf6,2) + ",";
+		data := data + NumToStr(currentTarget.robconf.cfx,2) + ",";
+		data := data + NumToStr(currentTarget.extax.eax_a,2) + ",";
+		data := data + NumToStr(currentTarget.extax.eax_b,2) + ",";
+		data := data + NumToStr(currentTarget.extax.eax_c,2) + ",";
+		data := data + NumToStr(currentTarget.extax.eax_d,2) + ",";
+		data := data + NumToStr(currentTarget.extax.eax_e,2) + ",";
+		data := data + NumToStr(currentTarget.extax.eax_f,2);
 		SocketSend incomming_socket\Str:=data;
 		SocketReceive incomming_socket\Str:=data;
 	ENDPROC
