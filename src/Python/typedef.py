@@ -32,13 +32,16 @@ class pos:
     def set_z(self,z):
         self.__z = float(z)
 
-    def get_x(self):
+    @property
+    def x(self):
         return self.__x
 
-    def get_y(self):
+    @property
+    def y(self):
         return self.__y
 
-    def get_z(self):
+    @property
+    def z(self):
         return self.__z
 
 class orient:
@@ -81,16 +84,20 @@ class orient:
     def set_q4(self, q4):
         self.__q4 = q4
 
-    def get_q1(self):
+    @property
+    def q1(self):
         return self.__q1
 
-    def get_q2(self):
+    @property
+    def q2(self):
         return self.__q2
 
-    def get_q3(self):
+    @property
+    def q3(self):
         return self.__q3
 
-    def get_q4(self):
+    @property
+    def q4(self):
         return self.__q4
 
 class robTarget:
@@ -143,8 +150,10 @@ class robTarget:
     def set_orient(self, q1, q2, q3, q4):
         self.__orient.set_orient(q1, q2, q3, q4)
 
-    def get_pos(self):
-        return self.__pos.copy()
+    @property
+    def pos(self):
+        return self.__pos
 
-    def get_orient(self):
-        return self.__orient.copy()
+    @property
+    def orient(self):
+        return self.__orient
