@@ -12,10 +12,10 @@ Item {
         border.color:"silver"
         color: "whitesmoke"
         TextInput {
-            id: field
+            id: input
             width: parent.width
 
-            color: "lightgray"
+            color: "darkblue"
             font.pointSize: 12
             padding: 5
             clip: true
@@ -24,5 +24,8 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             text: qsTr(content)
         }
+    }
+    function log(msg){
+        content = String(msg)
     }
 }

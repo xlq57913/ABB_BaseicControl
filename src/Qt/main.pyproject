@@ -1,3 +1,10 @@
 {
-    "files": ["main.py","customControls/LineEdit.qml","main.qml","customControls/Logger.qml","customControls/Info.qml","Python/RobDriverBuilder.py","Python/baseRobDriver.py"]
+    "files": ["Python/main.py",
+              "qml/customControls/LineEdit.qml",
+              "qml/main.qml",
+              "qml/customControls/Logger.qml",
+              "qml/customControls/Info.qml",
+              "Python/abbTypedef.py",
+              "Python/mediator.py",
+              "Python/baseRobDriver.py"]
 }

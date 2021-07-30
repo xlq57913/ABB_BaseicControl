@@ -5,8 +5,11 @@ import QtQuick.Layouts 1.3
 Item {
     id: lineEdit
     property string content: ""
-    signal edittingFinished(string content)
+    property alias readonly: input.readOnly
+    property alias color: rect.color
+    signal edittingFinished()
     Rectangle {
+        id: rect
         width: parent.width
         height: parent.height
         radius: 5
@@ -26,7 +29,7 @@ Item {
             text: qsTr(content)
             onEditingFinished: {
                 content = displayText
-                lineEdit.edittingFinished(content)
+                lineEdit.edittingFinished()
                 ensureVisible(0)
             }
         }

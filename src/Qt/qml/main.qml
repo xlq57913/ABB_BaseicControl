@@ -50,6 +50,11 @@ Window {
                     font.pixelSize: 12
 
                     model: ["ABB"]
+
+                    onCurrentTextChanged: {
+                        mediator.rob_type = comboBox_robType.currentText
+                        logger.log("set robot type to "+comboBox_robType.currentText)
+                    }
                 }
 
                 Label{
@@ -61,12 +66,18 @@ Window {
                 }
 
                 CustomControls.LineEdit{
+                    id: lineEdit_ip
                     Layout.fillWidth: true
                     Layout.minimumWidth: 125
                     Layout.preferredWidth: 150
                     Layout.preferredHeight: 25
 
                     content: "0.0.0.0"
+
+                    onEdittingFinished: {
+                        mediator.ip = content
+                        logger.log("set ip address to " + content)
+                    }
 
                 }
 
@@ -79,24 +90,77 @@ Window {
                 }
 
                 CustomControls.LineEdit{
+                    id: lineEdit_port
                     Layout.fillWidth: true
                     Layout.minimumWidth: 45
                     Layout.preferredWidth: 60
                     Layout.preferredHeight: 25
 
                     content: "0"
+
+                    onEdittingFinished: {
+                        mediator.port = Number(content)
+                        logger.log("set port to " + content)
+                    }
                 }
 
                 Button{
+                    property bool isConnected: false
+
                     id: button_connect
                     Layout.fillWidth: true
                     Layout.preferredHeight: 25
-                    Layout.preferredWidth: 80
+                    Layout.preferredWidth: 100
                     Layout.alignment: Qt.AlignRight
                     Layout.margins: 5
                     font.pixelSize: 12
                     highlighted: true
-                    text: qsTr("CONNECT")
+                    text: qsTr("CONNECT") 
+
+                    onClicked: {
+                        mediator.is_connected = !isConnected
+                    }
+
+                    states: [
+                        State {
+                            name: "Connected"
+                            when: mediator.is_connected
+                            PropertyChanges {
+                                target: button_connect
+                                text: qsTr("DISCONNECT")
+                                isConnected: true
+                            }
+                            PropertyChanges {
+                                target: lineEdit_ip
+                                enabled:false
+                                color: "lightgray"
+                            }
+                            PropertyChanges {
+                                target: lineEdit_port
+                                enabled:false
+                                color: "lightgray"
+                            }
+                        },
+                        State {
+                            name: "Disconnected"
+                            when: !mediator.is_connected
+                            PropertyChanges {
+                                target: button_connect
+                                text: qsTr("CONNECT")
+                                isConnected: false
+                            }
+                            PropertyChanges {
+                                target: lineEdit_ip
+                                enabled:true
+                                color: "white"
+                            }
+                            PropertyChanges {
+                                target: lineEdit_port
+                                enabled:true
+                                color: "white"
+                            }
+                        }
+                    ]
                 }
             }
         }
@@ -195,6 +259,7 @@ Window {
         }
 
         CustomControls.Logger{
+            id: logger
             Layout.fillWidth: true
             Layout.minimumHeight: 25
             Layout.preferredHeight: 35
