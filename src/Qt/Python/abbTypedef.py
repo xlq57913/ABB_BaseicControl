@@ -14,10 +14,10 @@ class Pos:
     def __repr__(self):
         return "{:06.2f},{:06.2f},{:06.2f}".format(self._x, self._y, self._z)
 
-    def encode(self):
+    def encode(self) -> bytes:
         return repr(self).encode('utf-8')
 
-    def decode(self, data):
+    def decode(self, data: str):
         data = data.decode('utf-8').split(",")
         (self._x, self._y, self._z) = (float(data[0]), float(data[1]), float(data[2]))
 
@@ -36,16 +36,20 @@ class Pos:
         self._z = float(z)
 
     @property
-    def x(self):
+    def x(self) -> float:
         return self._x
 
     @property
-    def y(self):
+    def y(self) -> float:
         return self._y
 
     @property
-    def z(self):
+    def z(self) -> float:
         return self._z
+
+    @property
+    def string_list(self) -> list:
+        return ["x: {:06.2f}".format(self._x), "y: {:06.2f}".format(self._y), "z: {:06.2f}".format(self._z)]
 
 
 class Orient:
@@ -66,10 +70,10 @@ class Orient:
     def __repr__(self):
         return "{:06.3f},{:06.3f},{:06.3f},{:06.3f}".format(self._q1, self._q2, self._q3, self._q4)
 
-    def encode(self):
+    def encode(self) -> bytes:
         return repr(self).encode('utf-8')
 
-    def decode(self, data):
+    def decode(self, data: str):
         data = data.decode('utf-8').split(",")
         (self._q1, self._q2, self._q3, self._q4) = (float(data[0]), float(data[1]), float(data[2]), float(data[3]))
 
@@ -92,20 +96,25 @@ class Orient:
         self._q4 = q4
 
     @property
-    def q1(self):
+    def q1(self) -> float:
         return self._q1
 
     @property
-    def q2(self):
+    def q2(self) -> float:
         return self._q2
 
     @property
-    def q3(self):
+    def q3(self) -> float:
         return self._q3
 
     @property
-    def q4(self):
+    def q4(self) -> float:
         return self._q4
+
+    @property
+    def string_list(self) -> list:
+        return ["q1: {:06.3f}".format(self._q1), "q2: {:06.3f}".format(self._q2),
+                "q3: {:06.3f}".format(self._q3), "q4: {:06.3f}".format(self._q4)]
 
 
 class ConfData:
@@ -126,12 +135,12 @@ class ConfData:
     def __repr__(self):
         return "{:06.2f},{:06.2f},{:06.2f},{:06.2f}".format(self._cf1, self._cf4, self._cf6, self._cfx)
 
-    def encode(self):
+    def encode(self) -> bytes:
         return repr(self).encode('utf-8')
 
-    def decode(self, data):
+    def decode(self, data: str):
         data = data.decode('utf-8').split(",")
-        (self._cf1, self.cf4, self._cf6, self._cfx) = (float(data[0]), float(data[1]), float(data[2]))
+        (self._cf1, self._cf4, self._cf6, self._cfx) = (float(data[0]), float(data[1]), float(data[2]), float(data[3]))
 
     def set_confData(self, cf1, cf4, cf6, cfx):
         self._cf1 = float(cf1)
@@ -152,20 +161,25 @@ class ConfData:
         self._cf4 = float(cfx)
 
     @property
-    def cf1(self):
+    def cf1(self) -> float:
         return self._cf1
 
     @property
-    def cf4(self):
+    def cf4(self) -> float:
         return self._cf4
 
     @property
-    def cf6(self):
+    def cf6(self) -> float:
         return self._cf6
 
     @property
-    def cfx(self):
+    def cfx(self) -> float:
         return self._cfx
+
+    @property
+    def string_list(self) -> list:
+        return ["cf1: {:06.2f}".format(self._cf1), "cf4: {:06.2f}".format(self._cf4),
+                "cf6: {:06.2f}".format(self._cf6), "cfx: {:06.2f}".format(self._cfx)]
 
 
 class ExtJoint:
@@ -192,10 +206,10 @@ class ExtJoint:
         return "{:06.2f},{:06.2f},{:06.2f},{:06.2f},{:06.2f},{:06.2f}".format(
             self._eax_a, self._eax_b, self._eax_c, self._eax_d, self._eax_e, self._eax_e)
 
-    def encode(self):
+    def encode(self) -> bytes:
         return repr(self).encode('utf-8')
 
-    def decode(self, data):
+    def decode(self, data: str):
         data = data.decode('utf-8').split(",")
         (self._eax_a, self._eax_b, self._eax_c, self._eax_d, self._eax_e, self._eax_f) = (
             float(data[0]), float(data[1]), float(data[2]), float(data[3]), float(data[4]), float(data[5]))
@@ -227,28 +241,34 @@ class ExtJoint:
         self._eax_f = float(eax_f)
 
     @property
-    def eax_a(self):
+    def eax_a(self) -> float:
         return self._eax_a
 
     @property
-    def eax_b(self):
+    def eax_b(self) -> float:
         return self._eax_b
 
     @property
-    def eax_c(self):
+    def eax_c(self) -> float:
         return self._eax_c
 
     @property
-    def eax_d(self):
+    def eax_d(self) -> float:
         return self._eax_d
 
     @property
-    def eax_e(self):
+    def eax_e(self) -> float:
         return self._eax_e
 
     @property
-    def eax_f(self):
+    def eax_f(self) -> float:
         return self._eax_f
+
+    @property
+    def string_list(self) -> list:
+        return ["eax_a: {:06.2f}".format(self._eax_a), "eax_b: {:06.2f}".format(self._eax_b),
+                "eax_c: {:06.2f}".format(self._eax_c), "eax_d: {:06.2f}".format(self._eax_d),
+                "eax_e: {:06.2f}".format(self._eax_e), "eax_f: {:06.2f}".format(self._eax_f)]
 
 
 class RobTarget:
@@ -271,10 +291,10 @@ class RobTarget:
     def __repr__(self):
         return "{0!r},{1!r},{2!r},{3!r}".format(self._trans, self._rot, self._robConf, self._exTax)
 
-    def encode(self):
+    def encode(self) -> bytes:
         return repr(self).encode('utf-8')
 
-    def decode(self, data):
+    def decode(self, data: str):
         data = data.decode('utf-8').split(",")
         self._trans.set_pos(data[0], data[1], data[2])
         self._rot.set_orient(data[3], data[4], data[5], data[6])
@@ -285,40 +305,25 @@ class RobTarget:
         self._trans.set_pos(x, y, z)
         self._rot.set_orient(q1, q2, q3, q4)
 
-    def set_x(self, x):
-        self._trans.set_x(x)
-
-    def set_y(self, y):
-        self._trans.set_y(y)
-
-    def set_z(self, z):
-        self._trans.set_z(z)
-
-    def set_trans(self, x, y, z):
-        self._trans.set_pos(x, y, z)
-
-    def set_q1(self, q1):
-        self._rot.set_q1(q1)
-
-    def set_q2(self, q2):
-        self._rot.set_q2(q2)
-
-    def set_q3(self, q3):
-        self._rot.set_q3(q3)
-
-    def set_q4(self, q4):
-        self._rot.set_q4(q4)
-
-    def set_rot(self, q1, q2, q3, q4):
-        self._rot.set_orient(q1, q2, q3, q4)
-
     @property
-    def pos(self):
+    def trans(self) -> Pos:
         return self._trans
 
     @property
-    def orient(self):
+    def rot(self) -> Orient:
         return self._rot
+
+    @property
+    def robConf(self) -> ConfData:
+        return self._robConf
+
+    @property
+    def exTax(self) -> ExtJoint:
+        return self._exTax
+
+    @property
+    def string_list(self):
+        return self._trans.string_list + self._rot.string_list + self._robConf.string_list + self._exTax.string_list
 
 
 class RobInfo:
@@ -340,6 +345,7 @@ class RobInfo:
 
     def decode(self, data):
         data = data.decode('utf-8').split("*")
+        print(data)
         (self._serialNo, self._swVersion, self._robType) = (data[0], data[1], data[2])
 
     @property
@@ -351,5 +357,9 @@ class RobInfo:
         return self._swVersion
 
     @property
-    def robTyope(self):
+    def robType(self):
         return self._robType
+
+    @property
+    def string_list(self):
+        return ["SerialNo: %s" % self._serialNo, "SWVersion: %s" % self._swVersion, "RobType: %s" % self._robType]

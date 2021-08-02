@@ -4,7 +4,10 @@
               "qml/main.qml",
               "qml/customControls/Logger.qml",
               "qml/customControls/Info.qml",
+              "qml/customControls/TwoLayerInfo.qml",
+              "qml/customControls/TitleBar.qml",
               "Python/abbTypedef.py",
               "Python/mediator.py",
-              "Python/baseRobDriver.py"]
+              "Python/baseRobDriver.py",
+              "Python/abbRobDriver.py"]
 }

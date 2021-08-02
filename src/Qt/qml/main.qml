@@ -72,7 +72,7 @@ Window {
                     Layout.preferredWidth: 150
                     Layout.preferredHeight: 25
 
-                    content: "0.0.0.0"
+                    content: mediator.ip
 
                     onEdittingFinished: {
                         mediator.ip = content
@@ -96,7 +96,7 @@ Window {
                     Layout.preferredWidth: 60
                     Layout.preferredHeight: 25
 
-                    content: "0"
+                    content: qsTr(Number(mediator.port).toString())
 
                     onEdittingFinished: {
                         mediator.port = Number(content)
@@ -202,29 +202,29 @@ Window {
                         anchors.left: parent.left
                         anchors.leftMargin: 5
 
-                        CustomControls.Info{
-                            id: info_robType
+                        CustomControls.TitleBar{
+                            text: "systemInfo"
+                            color: "black"
                             Layout.preferredHeight: 15
                             Layout.fillWidth: true
-                            infoType: "RobType"
-                            value: "None"
                         }
 
-                        CustomControls.Info{
-                            id: info_serialNo
-                            Layout.preferredHeight: 15
+                        CustomControls.TwoLayerInfo{
+                            id: twoLayerInfo_sys
+                            title: "sysInfo"
                             Layout.fillWidth: true
-                            infoType: "SerialNo"
-                            value: "None"
+                            Layout.minimumHeight: 60
+                            content: mediator.rob_system_info
                         }
 
-                        CustomControls.Info{
-                            id: info_swVersion
+                        CustomControls.TitleBar{
+                            text: "robTarget"
+                            color: "black"
                             Layout.preferredHeight: 15
                             Layout.fillWidth: true
-                            infoType: "SWVersion"
-                            value: "None"
                         }
+
+
                         CustomControls.Info{
                             id: info_pos
                             Layout.preferredHeight: 15
