@@ -1,6 +1,7 @@
 from PySide2.QtCore import QObject, Property, Signal, QStringListModel
 from abbRobDriver import AbbRobDriver
 from abbTypedef import *
+from random import random
 
 
 class Mediator(QObject):
@@ -8,18 +9,25 @@ class Mediator(QObject):
     _port = 1025
     _robType = "None"
     _robSysInfo = None
+    _robTargetInfo = None
     _isConnected = False
+    _sendCmd = False
     _robotDriver = None
+    _target = None
 
     ipChanged = Signal()
     portChanged = Signal()
     connectionStateChanged = Signal()
+    cmdSent = Signal()
     robSysInfoChanged = Signal()
+    robTargetInfoChanged = Signal()
 
     def __init__(self, parent=None):
         super(Mediator, self).__init__(parent)
         self._robSysInfo = QStringListModel()
+        self._robTargetInfo = QStringListModel()
         self._robotDriver = AbbRobDriver()
+        self._target = RobTarget()
 
     def get_ip(self):
         return self._ip
@@ -51,12 +59,29 @@ class Mediator(QObject):
     def set_is_connected(self, var: bool):
         if var:
             self.connect_to_robot()
+            self._robotDriver.require_rob_sys_info()
             self._robSysInfo.setStringList(self._robotDriver.rob_sys_info.string_list)
             self.robSysInfoChanged.emit()
+            self._robotDriver.require_rob_target_info()
+            self._robTargetInfo.setStringList(self._robotDriver.rob_target_info.string_list)
+            self.robTargetInfoChanged.emit()
+
         else:
             self.disconnect_from_robot()
+            self._robSysInfo.removeRows(0, self._robSysInfo.rowCount())
+            self._robTargetInfo.removeRows(0, self._robTargetInfo.rowCount())
 
     is_connected = Property(bool, get_is_connected, set_is_connected, notify=connectionStateChanged)
+
+    def get_send_cmd(self):
+        return self._sendCmd
+
+    def set_send_cmd(self, var: bool):
+        if var:
+            self.set_random_target()
+            self.move_rob_target()
+
+    send_cmd = Property(bool, get_send_cmd, set_send_cmd, notify=cmdSent)
 
     def get_rob_system_info(self):
         return self._robSysInfo
@@ -65,6 +90,14 @@ class Mediator(QObject):
         pass
 
     rob_system_info = Property(QObject, get_rob_system_info, set_rob_system_info, notify=robSysInfoChanged)
+
+    def get_rob_target_info(self):
+        return self._robTargetInfo
+
+    def set_rob_target_info(self, val):
+        pass
+
+    rob_target_info = Property(QObject, get_rob_target_info, set_rob_target_info, notify=robTargetInfoChanged)
 
     def connect_to_robot(self):
         if self._robotDriver is not None:
@@ -81,3 +114,12 @@ class Mediator(QObject):
             return
         self._isConnected = False
         self.connectionStateChanged.emit()
+
+    def set_random_target(self):
+        self._target.decode(self._robotDriver.rob_target_info.encode())
+        self._target.trans.set_x(self._target.trans.x + 10 * random())
+        self._target.trans.set_y(self._target.trans.y + 10 * random())
+        self._target.trans.set_z(self._target.trans.z + 10 * random())
+
+    def move_rob_target(self):
+        self._robotDriver.move_rob_target_to(self._target)

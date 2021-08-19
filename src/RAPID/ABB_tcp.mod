@@ -9,19 +9,20 @@ MODULE tcp
 		Initialize;
 		WHILE TRUE DO
 		acceptConnection;
-		getData;
-		phraseCmdFlag;
+		WHILE TRUE DO
+		getCmdFlag;
 		TEST cmdFlag
+		CASE 0 : !// PC disconnect from robt
 		CASE 1 : !// PC requires robotStatus
 			sendRobInfo;
 		CASE 2 : !// PC requires currentRobotTarget
 			sendCurrentTarget;
 		CASE 3 : !// PC sends targetPoint to move to
-			getData;
-			phraseTarget;
+			getTarget;
 			moveToTarget;
 		DEFAULT :
 		ENDTEST
+		ENDWHILE
 		closeConnection;
 		ENDWHILE
 	ENDPROC
@@ -34,7 +35,7 @@ MODULE tcp
 	ENDPROC
 
 	PROC acceptConnection()
-		SocketAccept server, incomming_socket;
+		SocketAccept server, incomming_socket \Time:=WAIT_MAX;
 	ENDPROC
 
 	PROC closeConnection()
@@ -42,20 +43,22 @@ MODULE tcp
 	ENDPROC
 
 	PROC getData()
-		SocketReceive incomming_socket\Str:=data;
-		SocketSend incomming_socket\Str:="COPY!";
+		SocketReceive incomming_socket \Str:=data \Time:=WAIT_MAX;
+		SocketSend incomming_socket \Str:="COPY!";
 	ENDPROC
 
-	PROC phraseCmdFlag()
+	PROC getCmdFlag()
 		VAR bool ok;
+		getData;
 		ok:=strtoval(data, cmdFlag);
 	ENDPROC
 
-	PROC phraseTarget()
+	PROC getTarget()
 		VAR num start:=1;
 		VAR num end:=0;
 		VAR bool ok;
-		start:=1;
+
+		getData;
 		end:=StrFind(data,start,",");
 		ok:=strtoval(StrPart(data,start,end-start), target.trans.x);
 		start:=end+1;
@@ -64,7 +67,10 @@ MODULE tcp
 		start:=end+1;
 		end:=StrFind(data,start,",");
 		ok:=strtoval(StrPart(data,start,end-start), target.trans.z);
-		start:=end+1;
+
+		getData;
+		start:=1;
+		end:=0;
 		end:=StrFind(data,start,",");
 		ok:=strtoval(StrPart(data,start,end-start), target.rot.q1);
 		start:=end+1;
@@ -76,6 +82,42 @@ MODULE tcp
 		start:=end+1;
 		end:=StrFind(data,start,",");
 		ok:=strtoval(StrPart(data,start,end-start), target.rot.q4);
+
+		getData;
+		start:=1;
+		end:=0;
+		end:=StrFind(data,start,",");
+		ok:=strtoval(StrPart(data,start,end-start), target.robconf.cf1);
+		start:=end+1;
+		end:=StrFind(data,start,",");
+		ok:=strtoval(StrPart(data,start,end-start), target.robconf.cf4);
+		start:=end+1;
+		end:=StrFind(data,start,",");
+		ok:=strtoval(StrPart(data,start,end-start), target.robconf.cf6);
+		start:=end+1;
+		end:=StrFind(data,start,",");
+		ok:=strtoval(StrPart(data,start,end-start), target.robconf.cfx);
+
+		getData;
+		start:=1;
+		end:=0;
+		end:=StrFind(data,start,",");
+		ok:=strtoval(StrPart(data,start,end-start), target.extax.eax_a);
+		start:=end+1;
+		end:=StrFind(data,start,",");
+		ok:=strtoval(StrPart(data,start,end-start), target.extax.eax_b);
+		start:=end+1;
+		end:=StrFind(data,start,",");
+		ok:=strtoval(StrPart(data,start,end-start), target.extax.eax_c);
+		start:=end+1;
+		end:=StrFind(data,start,",");
+		ok:=strtoval(StrPart(data,start,end-start), target.extax.eax_d);
+		start:=end+1;
+		end:=StrFind(data,start,",");
+		ok:=strtoval(StrPart(data,start,end-start), target.extax.eax_e);
+		start:=end+1;
+		end:=StrFind(data,start,",");
+		ok:=strtoval(StrPart(data,start,end-start), target.extax.eax_f);
 	ENDPROC
 
 	PROC moveToTarget()
@@ -84,8 +126,8 @@ MODULE tcp
 
 	PROC sendRobInfo()
 		data := GetSysInfo(\SerialNo) + "*";
-        data := addString + GetSysInfo(\SWVersion) + "*";
-        data := addString + GetSysInfo(\RobotType);
+        data := data + GetSysInfo(\SWVersion) + "*";
+        data := data + GetSysInfo(\RobotType);
 		SocketSend incomming_socket\Str:=data;
 		SocketReceive incomming_socket\Str:=data;
 	ENDPROC
@@ -96,20 +138,29 @@ MODULE tcp
 		data := NumToStr(currentTarget.trans.x,2) + ",";
         data := data + NumToStr(currentTarget.trans.y,2) + ",";
         data := data + NumToStr(currentTarget.trans.z,2) + ",";
-        data := data + NumToStr(currentTarget.rot.q1,3) + ",";
+		SocketSend incomming_socket\Str:=data;
+		SocketReceive incomming_socket\Str:=data;
+
+        data := NumToStr(currentTarget.rot.q1,3) + ",";
         data := data + NumToStr(currentTarget.rot.q2,3) + ",";
         data := data + NumToStr(currentTarget.rot.q3,3) + ",";
         data := data + NumToStr(currentTarget.rot.q4,3) + ",";
-		data := data + NumToStr(currentTarget.robconf.cf1,2) + ",";
-		data := data + NumToStr(currentTarget.robconf.cf4,2) + ",";
-		data := data + NumToStr(currentTarget.robconf.cf6,2) + ",";
-		data := data + NumToStr(currentTarget.robconf.cfx,2) + ",";
-		data := data + NumToStr(currentTarget.extax.eax_a,2) + ",";
-		data := data + NumToStr(currentTarget.extax.eax_b,2) + ",";
-		data := data + NumToStr(currentTarget.extax.eax_c,2) + ",";
-		data := data + NumToStr(currentTarget.extax.eax_d,2) + ",";
-		data := data + NumToStr(currentTarget.extax.eax_e,2) + ",";
-		data := data + NumToStr(currentTarget.extax.eax_f,2);
+		SocketSend incomming_socket\Str:=data;
+		SocketReceive incomming_socket\Str:=data;
+
+		data := NumToStr(currentTarget.robconf.cf1,1) + ",";
+		data := data + NumToStr(currentTarget.robconf.cf4,1) + ",";
+		data := data + NumToStr(currentTarget.robconf.cf6,1) + ",";
+		data := data + NumToStr(currentTarget.robconf.cfx,1) + ",";
+		SocketSend incomming_socket\Str:=data;
+		SocketReceive incomming_socket\Str:=data;
+
+		data := NumToStr(currentTarget.extax.eax_a,1) + ",";
+		data := data + NumToStr(currentTarget.extax.eax_b,1) + ",";
+		data := data + NumToStr(currentTarget.extax.eax_c,1) + ",";
+		data := data + NumToStr(currentTarget.extax.eax_d,1) + ",";
+		data := data + NumToStr(currentTarget.extax.eax_e,1) + ",";
+		data := data + NumToStr(currentTarget.extax.eax_f,1);
 		SocketSend incomming_socket\Str:=data;
 		SocketReceive incomming_socket\Str:=data;
 	ENDPROC

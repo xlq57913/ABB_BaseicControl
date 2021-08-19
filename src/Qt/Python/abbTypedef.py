@@ -345,7 +345,6 @@ class RobInfo:
 
     def decode(self, data):
         data = data.decode('utf-8').split("*")
-        print(data)
         (self._serialNo, self._swVersion, self._robType) = (data[0], data[1], data[2])
 
     @property

@@ -184,6 +184,13 @@ Window {
                     border.color: "white"
                     color: base.color
                     radius: 5
+
+                    Button{
+                        text: "test"
+                        onClicked: {
+                            mediator.send_cmd = true
+                        }
+                    }
                 }
 
                 Rectangle{
@@ -213,8 +220,10 @@ Window {
                             id: twoLayerInfo_sys
                             title: "sysInfo"
                             Layout.fillWidth: true
-                            Layout.minimumHeight: 60
+                            Layout.minimumHeight: 15
+                            Layout.preferredHeight: preferredHeight
                             content: mediator.rob_system_info
+                            color:base.color
                         }
 
                         CustomControls.TitleBar{
@@ -223,35 +232,14 @@ Window {
                             Layout.preferredHeight: 15
                             Layout.fillWidth: true
                         }
-
-
-                        CustomControls.Info{
-                            id: info_pos
-                            Layout.preferredHeight: 15
+                        CustomControls.TwoLayerInfo{
+                            id: twoLayerInfo_target
+                            title: "targetInfo"
                             Layout.fillWidth: true
-                            infoType: "(x,y,z)"
-                            value: "None"
-                        }
-                        CustomControls.Info{
-                            id: info_orient
-                            Layout.preferredHeight: 15
-                            Layout.fillWidth: true
-                            infoType: "(q1,q2,q3,q4)"
-                            value: "None"
-                        }
-                        CustomControls.Info{
-                            id: info_config
-                            Layout.preferredHeight: 15
-                            Layout.fillWidth: true
-                            infoType: "()"
-                            value: "None"
-                        }
-                        CustomControls.Info{
-                            id: info_extax
-                            Layout.preferredHeight: 15
-                            Layout.fillWidth: true
-                            infoType: "()"
-                            value: "None"
+                            Layout.minimumHeight: 15
+                            Layout.preferredHeight: preferredHeight
+                            content: mediator.rob_target_info
+                            color:base.color
                         }
                     }
                 }
@@ -269,5 +257,4 @@ Window {
             content: "Messages will be shown here..."
         }
     }
-
 }
